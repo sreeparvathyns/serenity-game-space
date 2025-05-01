@@ -60,28 +60,32 @@ const guidedMeditations = [
     title: "Stress Relief",
     description: "A guided meditation to help reduce stress and anxiety",
     duration: 10,
-    imageUrl: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVsYXglMjBtZWRpdGF0aW9ufGVufDB8fDB8fHww"
+    imageUrl: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVsYXglMjBtZWRpdGF0aW9ufGVufDB8fDB8fHww",
+    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_stress_relief_3min.mp3"
   },
   {
     id: "sleep-well",
     title: "Sleep Well",
     description: "Calm your mind and prepare for restful sleep",
     duration: 15,
-    imageUrl: "https://images.unsplash.com/photo-1511295842304-9d6124fed2ba?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c2xlZXB8ZW58MHx8MHx8fDA%3D"
+    imageUrl: "https://images.unsplash.com/photo-1511295842304-9d6124fed2ba?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c2xlZXB8ZW58MHx8MHx8fDA%3D",
+    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_sleep_5min.mp3"
   },
   {
     id: "morning-energy",
     title: "Morning Energy",
     description: "Start your day with positive energy and intention",
     duration: 8,
-    imageUrl: "https://images.unsplash.com/photo-1506252374453-ef01bde4595d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bW9ybmluZyUyMHN1bnJpc2V8ZW58MHx8MHx8fDA%3D"
+    imageUrl: "https://images.unsplash.com/photo-1506252374453-ef01bde4595d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bW9ybmluZyUyMHN1bnJpc2V8ZW58MHx8MHx8fDA%3D",
+    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_morning_3min.mp3"
   },
   {
     id: "self-compassion",
     title: "Self-Compassion",
     description: "Develop kindness and compassion toward yourself",
     duration: 12,
-    imageUrl: "https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VsZiUyMGxvdmV8ZW58MHx8MHx8fDA%3D"
+    imageUrl: "https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VsZiUyMGxvdmV8ZW58MHx8MHx8fDA%3D",
+    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_compassion_5min.mp3"
   }
 ];
 

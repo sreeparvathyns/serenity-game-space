@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
+import { audioService } from '@/services/audioService';
 
 interface MindfulnessExercise {
   id: string;
@@ -18,6 +19,9 @@ interface MindfulnessTimerProps {
   exercise: MindfulnessExercise;
   onBack: () => void;
 }
+
+// Ambient sound for mindfulness exercises
+const AMBIENT_SOUND_URL = 'https://soundbible.com/mp3/rainforest_ambience-GlorySunz-1938133500.mp3';
 
 const MindfulnessTimer = ({ exercise, onBack }: MindfulnessTimerProps) => {
   const durationInSeconds = exercise.duration * 60;
@@ -33,15 +37,29 @@ const MindfulnessTimer = ({ exercise, onBack }: MindfulnessTimerProps) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
+  // Initialize audio
+  useEffect(() => {
+    audioService.initializeAudio(AMBIENT_SOUND_URL);
+    audioService.setVolume(60); // Lower volume for ambient sounds
+    
+    return () => {
+      audioService.stopAudio();
+    };
+  }, []);
+  
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     
     if (isActive && timeRemaining > 0) {
+      // Play ambient sound
+      audioService.playAudio();
+      
       interval = setInterval(() => {
         setTimeRemaining((time) => {
           if (time <= 1) {
             clearInterval(interval!);
             setIsActive(false);
+            audioService.stopAudio();
             toast({
               title: "Exercise Complete",
               description: "Great job completing your mindfulness exercise!",
@@ -51,8 +69,13 @@ const MindfulnessTimer = ({ exercise, onBack }: MindfulnessTimerProps) => {
           return time - 1;
         });
       }, 1000);
-    } else if (!isActive && interval) {
-      clearInterval(interval);
+    } else if (!isActive) {
+      // Pause ambient sound
+      audioService.pauseAudio();
+      
+      if (interval) {
+        clearInterval(interval);
+      }
     }
     
     return () => {
@@ -85,11 +108,13 @@ const MindfulnessTimer = ({ exercise, onBack }: MindfulnessTimerProps) => {
     setTimeRemaining(durationInSeconds);
     setCurrentInstruction(0);
     setHasStarted(false);
+    audioService.stopAudio();
   };
   
   const handleBack = () => {
     if (isActive) {
       if (confirm("Your session is still in progress. Are you sure you want to exit?")) {
+        audioService.stopAudio();
         onBack();
       }
     } else {
@@ -113,7 +138,7 @@ const MindfulnessTimer = ({ exercise, onBack }: MindfulnessTimerProps) => {
             <p className="text-muted-foreground">{exercise.description}</p>
           </div>
           
-          <div className={`transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0 h-0'}`}>
             <div className="flex items-center justify-center mb-8">
               <div className="text-4xl font-mono">
                 {formatTime(timeRemaining)}

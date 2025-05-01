@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/components/ui/use-toast';
+import { audioService } from '@/services/audioService';
 
 interface GuidedMeditationProps {
   meditation: {
@@ -14,6 +15,7 @@ interface GuidedMeditationProps {
     description: string;
     duration: number;
     imageUrl: string;
+    audioUrl?: string; // Optional audioUrl property
   };
   onBack: () => void;
 }
@@ -27,6 +29,9 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
   const [muted, setMuted] = useState(false);
   const { toast } = useToast();
   
+  // Default audio if not provided
+  const audioUrl = meditation.audioUrl || 'https://soundbible.com/mp3/meditation_gong-daniel_simon.mp3';
+  
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -34,14 +39,30 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
   };
   
   useEffect(() => {
+    // Initialize audio when component mounts
+    audioService.initializeAudio(audioUrl);
+    audioService.setVolume(volume);
+    audioService.setMuted(muted);
+    
+    return () => {
+      // Clean up audio when component unmounts
+      audioService.stopAudio();
+    };
+  }, [audioUrl]);
+  
+  useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     
     if (isActive && timeRemaining > 0) {
+      // Play audio when active
+      audioService.playAudio();
+      
       interval = setInterval(() => {
         setTimeRemaining((time) => {
           if (time <= 1) {
             clearInterval(interval!);
             setIsActive(false);
+            audioService.stopAudio();
             toast({
               title: "Meditation Complete",
               description: "Great job completing your meditation session!",
@@ -51,14 +72,25 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
           return time - 1;
         });
       }, 1000);
-    } else if (!isActive && interval) {
-      clearInterval(interval);
+    } else if (!isActive) {
+      // Pause audio when not active
+      audioService.pauseAudio();
+      
+      if (interval) {
+        clearInterval(interval);
+      }
     }
     
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [isActive, timeRemaining, toast]);
+  
+  useEffect(() => {
+    // Update volume and mute status when they change
+    audioService.setVolume(volume);
+    audioService.setMuted(muted);
+  }, [volume, muted]);
   
   const toggleMeditation = () => {
     if (!hasStarted) {
@@ -71,11 +103,13 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
     setIsActive(false);
     setTimeRemaining(durationInSeconds);
     setHasStarted(false);
+    audioService.stopAudio();
   };
   
   const handleBack = () => {
     if (isActive) {
       if (confirm("Your meditation is still in progress. Are you sure you want to exit?")) {
+        audioService.stopAudio();
         onBack();
       }
     } else {
@@ -118,7 +152,7 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
               <p className="text-muted-foreground">{meditation.description}</p>
             </div>
             
-            <div className={`transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0 h-0'}`}>
               <div className="flex justify-center mb-4">
                 <div className="text-3xl font-mono">
                   {formatTime(timeRemaining)}
