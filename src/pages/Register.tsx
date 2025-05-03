@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,8 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { user, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user, register } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -26,23 +26,15 @@ const Register = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     try {
-      // Mock registration - in a real app this would connect to an auth service
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created. You can now log in.",
-      });
-      
-      navigate('/login');
+      await register(email, password);
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "There was an error creating your account. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Registration failed:', error);
+      // Toast is already handled in the register function
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -116,9 +108,9 @@ const Register = () => {
             <Button 
               type="submit" 
               className="w-full bg-serenity-600 hover:bg-serenity-700" 
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="animate-spin rounded-full h-4 w-4 border-2 border-t-transparent border-serenity-100"></span>
                   Creating account...

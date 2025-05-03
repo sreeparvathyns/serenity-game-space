@@ -68,7 +68,7 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
                   <TooltipTrigger asChild>
                     <button
                       {...props}
-                      className={`${props.className || ''} ${mood ? 'font-medium' : ''}`}
+                      className={`${props?.className || ''} ${mood ? 'font-medium' : ''}`}
                     >
                       <time dateTime={format(date, 'yyyy-MM-dd')}>
                         {format(date, "d")}
