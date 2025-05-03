@@ -1,99 +1,78 @@
 
 import React from 'react';
-import { format, parseISO, isSameDay } from 'date-fns';
-import { Calendar } from "@/components/ui/calendar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { type DayProps } from 'react-day-picker';
 
-interface MoodEntry {
+// Map mood values to colors
+const moodColors: Record<string, string> = {
+  great: 'bg-green-400',
+  good: 'bg-green-300',
+  okay: 'bg-yellow-300',
+  bad: 'bg-orange-300',
+  terrible: 'bg-red-400'
+};
+
+type MoodEntry = {
   date: string;
-  mood: number;
-  note: string;
-}
+  mood: string;
+  notes?: string;
+};
 
 interface MoodCalendarViewProps {
-  moodEntries: MoodEntry[];
+  moodData: MoodEntry[];
 }
 
-const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
-  const getMoodForDay = (day: Date) => {
-    const entry = moodEntries.find(e => isSameDay(parseISO(e.date), day));
-    return entry ? entry.mood : null;
-  };
+const MoodCalendarView = ({ moodData }: MoodCalendarViewProps) => {
+  // Format mood data for calendar display
+  const formattedMoodData = moodData.reduce((acc: Record<string, string>, curr) => {
+    // Store the mood for each date
+    acc[curr.date] = curr.mood;
+    return acc;
+  }, {});
   
-  const getMoodClassName = (mood: number | null) => {
-    if (mood === null) return '';
+  // Custom day renderer for the calendar
+  const renderDay = (day: Date, dayProps: DayProps) => {
+    // Format the day to match our data format (YYYY-MM-DD)
+    const dateKey = format(day, 'yyyy-MM-dd');
     
-    switch (mood) {
-      case 1: return 'bg-red-200 text-red-800';
-      case 2: return 'bg-orange-200 text-orange-800';
-      case 3: return 'bg-yellow-200 text-yellow-800';
-      case 4: return 'bg-green-200 text-green-800';
-      case 5: return 'bg-serenity-200 text-serenity-800';
-      default: return '';
-    }
-  };
-  
-  const getNoteForDay = (day: Date) => {
-    const entry = moodEntries.find(e => isSameDay(parseISO(e.date), day));
-    return entry ? entry.note : null;
+    // Check if we have mood data for this date
+    const mood = formattedMoodData[dateKey];
+    const moodClass = mood ? moodColors[mood] : '';
+    
+    return (
+      <div
+        className={cn(
+          'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
+          moodClass ? `${moodClass} hover:bg-opacity-80 text-gray-900` : '',
+          dayProps.className // Use the className from dayProps
+        )}
+      >
+        <div className="flex h-full w-full items-center justify-center">
+          {format(day, 'd')}
+        </div>
+      </div>
+    );
   };
   
   return (
-    <div>
-      <TooltipProvider>
+    <Card>
+      <CardContent className="p-4">
         <Calendar
+          className="p-0"
           mode="single"
-          className="rounded-md border"
-          modifiers={{
-            mood1: (date) => getMoodForDay(date) === 1,
-            mood2: (date) => getMoodForDay(date) === 2,
-            mood3: (date) => getMoodForDay(date) === 3,
-            mood4: (date) => getMoodForDay(date) === 4,
-            mood5: (date) => getMoodForDay(date) === 5,
-          }}
-          modifiersClassNames={{
-            mood1: 'bg-red-100',
-            mood2: 'bg-orange-100',
-            mood3: 'bg-yellow-100',
-            mood4: 'bg-green-100',
-            mood5: 'bg-serenity-100',
-          }}
+          selected={new Date()}
+          month={new Date()}
+          showOutsideDays={true}
+          fixedWeeks
           components={{
-            Day: (props) => {
-              const date = props.date;
-              const mood = getMoodForDay(date);
-              const note = getNoteForDay(date);
-              
-              return (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      {...props}
-                      className={`${props.className || ''} ${mood ? 'font-medium' : ''}`}
-                    >
-                      <time dateTime={format(date, 'yyyy-MM-dd')}>
-                        {format(date, "d")}
-                      </time>
-                      {mood && (
-                        <div className={`w-2 h-2 rounded-full mx-auto mt-1 ${getMoodClassName(mood)}`} />
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  {mood && note && (
-                    <TooltipContent>
-                      <div className="text-sm">
-                        <div className="font-medium">Mood: {mood}/5</div>
-                        <div className="mt-1">{note}</div>
-                      </div>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              );
-            },
+            Day: ({ date, ...dayProps }) => renderDay(date, dayProps as DayProps)
           }}
         />
-      </TooltipProvider>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

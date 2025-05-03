@@ -27,10 +27,14 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [volume, setVolume] = useState(80);
   const [muted, setMuted] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   
   // Default audio if not provided
   const audioUrl = meditation.audioUrl || 'https://soundbible.com/mp3/meditation_gong-daniel_simon.mp3';
+  
+  // Fallback image in case the original doesn't load
+  const fallbackImage = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=60';
   
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -39,15 +43,31 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
   };
   
   useEffect(() => {
-    // Initialize audio when component mounts
-    audioService.initializeAudio(audioUrl);
-    audioService.setVolume(volume);
-    audioService.setMuted(muted);
-    
+    // Clean up audio on component unmount
     return () => {
-      // Clean up audio when component unmounts
       audioService.stopAudio();
     };
+  }, []);
+  
+  useEffect(() => {
+    // Initialize audio when component mounts or when audioUrl changes
+    const initAudio = async () => {
+      try {
+        console.log('Initializing audio with URL:', audioUrl);
+        audioService.initializeAudio(audioUrl);
+        audioService.setVolume(volume);
+        audioService.setMuted(muted);
+      } catch (error) {
+        console.error("Error initializing audio:", error);
+        toast({
+          title: "Audio Error",
+          description: "Could not load the meditation audio. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    initAudio();
   }, [audioUrl]);
   
   useEffect(() => {
@@ -55,7 +75,12 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
     
     if (isActive && timeRemaining > 0) {
       // Play audio when active
-      audioService.playAudio();
+      try {
+        console.log('Playing audio');
+        audioService.playAudio();
+      } catch (error) {
+        console.error("Error playing audio:", error);
+      }
       
       interval = setInterval(() => {
         setTimeRemaining((time) => {
@@ -74,7 +99,12 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
       }, 1000);
     } else if (!isActive) {
       // Pause audio when not active
-      audioService.pauseAudio();
+      try {
+        console.log('Pausing audio');
+        audioService.pauseAudio();
+      } catch (error) {
+        console.error("Error pausing audio:", error);
+      }
       
       if (interval) {
         clearInterval(interval);
@@ -88,8 +118,12 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
   
   useEffect(() => {
     // Update volume and mute status when they change
-    audioService.setVolume(volume);
-    audioService.setMuted(muted);
+    try {
+      audioService.setVolume(volume);
+      audioService.setMuted(muted);
+    } catch (error) {
+      console.error("Error setting audio properties:", error);
+    }
   }, [volume, muted]);
   
   const toggleMeditation = () => {
@@ -121,6 +155,11 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
     setMuted(!muted);
   };
   
+  const handleImageError = () => {
+    console.error("Error loading image:", meditation.imageUrl);
+    setImageError(true);
+  };
+  
   const progress = ((durationInSeconds - timeRemaining) / durationInSeconds) * 100;
   
   return (
@@ -131,11 +170,12 @@ const GuidedMeditation = ({ meditation, onBack }: GuidedMeditationProps) => {
       </Button>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="aspect-video relative rounded-lg overflow-hidden">
+        <div className="aspect-video relative rounded-lg overflow-hidden bg-gray-100">
           <img 
-            src={meditation.imageUrl} 
+            src={imageError ? fallbackImage : meditation.imageUrl} 
             alt={meditation.title} 
             className="w-full h-full object-cover"
+            onError={handleImageError}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
             <div className="p-6 text-white">
