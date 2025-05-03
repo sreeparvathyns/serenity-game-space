@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,39 +7,30 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { LogIn, Mail, Lock } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, user, isLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
     try {
-      // Mock login - in a real app this would connect to an auth service
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Store the user session in localStorage for this demo
-      localStorage.setItem('user', JSON.stringify({ email }));
-      
-      toast({
-        title: "Login successful",
-        description: "Welcome back to Serenity!",
-      });
-      
-      navigate('/');
+      await login(email, password);
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Login failed:', error);
+      // Toast is already handled in the login function
     }
   };
 
