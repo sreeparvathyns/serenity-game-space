@@ -59,9 +59,9 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
             mood5: 'bg-serenity-100',
           }}
           components={{
-            Day: ({ day, ...props }) => {
-              const mood = getMoodForDay(day);
-              const note = getNoteForDay(day);
+            Day: ({ date, ...props }) => {
+              const mood = getMoodForDay(date);
+              const note = getNoteForDay(date);
               
               return (
                 <Tooltip>
@@ -70,8 +70,8 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
                       {...props}
                       className={`${props.className || ''} ${mood ? 'font-medium' : ''}`}
                     >
-                      <time dateTime={format(day, 'yyyy-MM-dd')}>
-                        {format(day, "d")}
+                      <time dateTime={format(date, 'yyyy-MM-dd')}>
+                        {format(date, "d")}
                       </time>
                       {mood && (
                         <div className={`w-2 h-2 rounded-full mx-auto mt-1 ${getMoodClassName(mood)}`} />

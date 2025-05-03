@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Plus, Calendar, Search, Trash2, Edit } from 'lucide-react';
@@ -177,14 +176,16 @@ const Journal = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            <div className="mb-6">
+            <div className="mb-6 relative">
               <Input
                 placeholder="Search journal entries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-                icon={<Search className="h-4 w-4" />}
+                className="w-full pl-10"
               />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Search className="h-4 w-4" />
+              </div>
             </div>
             
             {sortedEntries.length > 0 ? (
