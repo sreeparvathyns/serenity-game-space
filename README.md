@@ -1,73 +1,218 @@
-# Welcome to your Lovable project
 
-## Project info
+# Serenity - Mental Health and Wellness Application
 
-**URL**: https://lovable.dev/projects/2ef14911-3a58-4039-b357-39fa6af0a0f3
+## Project Overview
 
-## How can I edit this code?
+Serenity is a comprehensive mental health mobile application designed to help users improve and maintain their mental well-being through science-backed techniques, mindfulness tools, and personal development resources. The application provides a calming, supportive environment with a gentle and empathetic tone, acting as a supportive companion for the user's mental wellness journey.
 
-There are several ways of editing your application.
+![Serenity App](https://placeholder-for-app-screenshot.com)
 
-**Use Lovable**
+## Technologies Used
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2ef14911-3a58-4039-b357-39fa6af0a0f3) and start prompting.
+### Frontend
+- **React**: A JavaScript library for building user interfaces
+- **TypeScript**: Adds static type definitions to enhance code quality and readability
+- **Vite**: Next generation frontend tooling for faster development and optimized production builds
+- **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs
+- **Shadcn UI**: A collection of reusable components built with Radix UI and Tailwind CSS
+- **React Router Dom**: For managing navigation and routing within the application
+- **Date-fns**: Modern JavaScript date utility library
+- **Lucide React**: A beautiful and consistent icon set with React components
+- **React Hook Form**: For efficient and flexible form handling
+- **TanStack Query**: For data fetching, caching, and state management
+- **React Day Picker**: A flexible date picker for React
 
-Changes made via Lovable will be committed automatically to this repo.
+### State Management
+- **Local Storage**: Used for persisting user data and authentication state on the client side
+- **React Context API**: For managing application-wide state
 
-**Use your preferred IDE**
+## Key Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Authentication System
+- Secure user authentication with email and password
+- User registration with email validation
+- Protected routes for authenticated users only
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Mood Tracking
+- Daily mood logging with a 5-point scale
+- Note-taking capability for mood entries
+- Calendar view with visual indicators for mood entries
+- Historical trend analysis for mood patterns
 
-Follow these steps:
+### Meditation & Mindfulness
+- Library of guided meditation sessions
+- Breathing exercise tools with animations
+- Mindfulness timer with customizable duration
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Journaling
+- Private journaling tool with text formatting
+- Prompt-based writing exercises
+- Searchable journal entries
+- Journal analytics for insight into emotional patterns
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Mental Health Games
+- Interactive games designed to reduce anxiety and improve focus
+- Memory games for cognitive improvement
+- Color relaxation activities for stress reduction
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Resources & Support
+- Curated articles on mental health topics
+- Emergency resources for crisis situations
+- Self-help courses and materials
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### User Experience
+- Responsive design for all device sizes
+- Soothing color palette with lavender, teal, and soft blues
+- Dark mode for reduced eye strain
+- Smooth animations and transitions for a calming experience
+
+## Application Architecture
+
+The application follows a component-based architecture using React. Key architectural elements include:
+
+1. **Authentication Layer**: Manages user authentication state using React Context API
+2. **Page Components**: Main views of the application (Home, Mood Tracker, Journal, etc.)
+3. **UI Components**: Reusable UI elements like buttons, cards, and forms
+4. **Feature Components**: Specialized components for specific features (Meditation Player, Mood Entry Form)
+5. **Hooks**: Custom React hooks for shared logic (useAuth, useMoodEntries, etc.)
+6. **Services**: Helper functions for data operations and external interactions
+
+## Data Storage
+
+In the current implementation, data is stored locally:
+
+- **User Authentication**: User credentials and authentication status stored in localStorage
+- **Mood Entries**: User mood data stored in localStorage
+- **Journal Entries**: Journal content stored in localStorage
+- **Application Preferences**: User settings and preferences stored in localStorage
+
+## Future Enhancements
+
+Potential future enhancements for the application include:
+
+1. **Backend Integration**: Implementation of a secure backend with proper authentication
+2. **Cloud Synchronization**: Allowing users to access their data across multiple devices
+3. **Notification System**: Time-based reminders for mood tracking and meditation
+4. **Community Features**: Optional anonymous community support elements
+5. **Advanced Analytics**: More sophisticated mood and journal analysis tools
+6. **Personalized Recommendations**: AI-driven content recommendations based on user data
+7. **Integration with Wearable Devices**: Heart rate and sleep data integration
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14.0.0 or later)
+- npm or yarn package manager
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+
+# Navigate to the project directory
+cd serenity
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Building for Production
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Create a production build
+npm run build
 
-**Use GitHub Codespaces**
+# Preview the production build locally
+npm run preview
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+serenity/
+├── public/            # Static assets
+├── src/
+│   ├── components/    # Reusable UI components
+│   │   ├── auth/      # Authentication-related components
+│   │   ├── games/     # Mental health games components
+│   │   ├── home/      # Home page components
+│   │   ├── journal/   # Journaling feature components
+│   │   ├── layout/    # Layout components (Header, Footer)
+│   │   ├── mindfulness/ # Mindfulness and meditation components
+│   │   ├── mood/      # Mood tracking components
+│   │   ├── resources/ # Resource components
+│   │   └── ui/        # Shadcn UI components
+│   ├── hooks/         # Custom React hooks
+│   ├── lib/           # Utility functions and libraries
+│   ├── pages/         # Page components
+│   ├── services/      # Service functions
+│   ├── App.tsx        # Main application component
+│   ├── index.css      # Global styles
+│   └── main.tsx       # Application entry point
+├── .gitignore         # Git ignore file
+├── index.html         # HTML entry point
+├── package.json       # Project dependencies and scripts
+├── postcss.config.js  # PostCSS configuration
+├── tailwind.config.ts # Tailwind CSS configuration
+├── tsconfig.json      # TypeScript configuration
+└── vite.config.ts     # Vite configuration
+```
 
-This project is built with:
+## Deployment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The application can be deployed to various hosting platforms:
 
-## How can I deploy this project?
+- **Vercel**: Optimized for React applications
+- **Netlify**: Simple deployment with continuous integration
+- **GitHub Pages**: For static site hosting
+- **Firebase Hosting**: For Google ecosystem integration
 
-Simply open [Lovable](https://lovable.dev/projects/2ef14911-3a58-4039-b357-39fa6af0a0f3) and click on Share -> Publish.
+## User Guide
 
-## Can I connect a custom domain to my Lovable project?
+### Registration and Login
+1. New users can create an account via the Registration page
+2. Returning users can log in with their email and password
+3. Authentication state persists across browser sessions
 
-Yes, you can!
+### Using the Mood Tracker
+1. Navigate to the Mood Tracker page
+2. Select your current mood on the 5-point scale
+3. Add an optional note about your feelings
+4. Submit your entry to save it
+5. View your mood history on the calendar or chart views
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Journaling
+1. Access the Journal page
+2. Create a new entry with the "+" button
+3. Write freely or use provided prompts
+4. Save your entry
+5. Search or filter past entries as needed
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Meditation and Mindfulness
+1. Go to the Mindfulness page
+2. Choose a guided meditation session
+3. Use the breathing exercises for immediate calm
+4. Track your meditation history and streaks
+
+## Contributors
+
+- [Your Name] - Lead Developer
+- [Designer Name] - UI/UX Design
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Thanks to all the open-source libraries that made this project possible
+- Inspiration from leading mental health applications in the market
+- Mental health resources and techniques adapted from evidence-based practices
+
+---
+
+© 2025 Serenity App. All rights reserved.
