@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import MindfulnessTimer from '@/components/mindfulness/MindfulnessTimer';
-import GuidedMeditation from '@/components/mindfulness/GuidedMeditation';
 
 // Validate image URLs are correct and accessible
 const mindfulnessExercises = [
@@ -55,52 +53,8 @@ const mindfulnessExercises = [
   }
 ];
 
-const guidedMeditations = [
-  {
-    id: "stress-relief",
-    title: "Stress Relief",
-    description: "A guided meditation to help reduce stress and anxiety",
-    duration: 10,
-    // Use a reliable image URL
-    imageUrl: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    // Update the audio URL to ensure it's accessible
-    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_stress_relief_3min.mp3"
-  },
-  {
-    id: "sleep-well",
-    title: "Sleep Well",
-    description: "Calm your mind and prepare for restful sleep",
-    duration: 15,
-    // Use a reliable image URL
-    imageUrl: "https://images.unsplash.com/photo-1511295842304-9d6124fed2ba?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    // Use a fallback audio URL that's known to work
-    audioUrl: "https://storage.googleapis.com/mind-website-prod/guided-meditations/Meditation_sleep_5min.mp3"
-  },
-  {
-    id: "morning-energy",
-    title: "Morning Energy",
-    description: "Start your day with positive energy and intention",
-    duration: 8,
-    // Use a reliable image URL
-    imageUrl: "https://images.unsplash.com/photo-1506252374453-ef01bde4595d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    // Use a fallback audio URL that's known to work
-    audioUrl: "https://soundbible.com/mp3/rainforest_ambience-GlorySunz-1938133500.mp3"
-  },
-  {
-    id: "self-compassion",
-    title: "Self-Compassion",
-    description: "Develop kindness and compassion toward yourself",
-    duration: 12,
-    // Use a reliable image URL
-    imageUrl: "https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    // Use a fallback audio URL that's known to work
-    audioUrl: "https://soundbible.com/mp3/meditation_gong-daniel_simon.mp3"
-  }
-];
-
 const Mindfulness = () => {
   const [selectedExercise, setSelectedExercise] = useState<typeof mindfulnessExercises[0] | null>(null);
-  const [selectedMeditation, setSelectedMeditation] = useState<typeof guidedMeditations[0] | null>(null);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -115,90 +69,34 @@ const Mindfulness = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="exercises" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="exercises">Simple Exercises</TabsTrigger>
-            <TabsTrigger value="guided">Guided Meditations</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="exercises" className="space-y-6">
-            {selectedExercise ? (
-              <MindfulnessTimer 
-                exercise={selectedExercise} 
-                onBack={() => setSelectedExercise(null)} 
-              />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mindfulnessExercises.map((exercise) => (
-                  <Card key={exercise.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="mb-4">
-                        <h3 className="text-xl font-semibold mb-1">{exercise.title}</h3>
-                        <p className="text-muted-foreground text-sm">{exercise.description}</p>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">{exercise.duration} minutes</span>
-                        <Button onClick={() => setSelectedExercise(exercise)}>
-                          <Play className="mr-2 h-4 w-4" />
-                          Start
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="guided" className="space-y-6">
-            {selectedMeditation ? (
-              <GuidedMeditation 
-                meditation={selectedMeditation} 
-                onBack={() => setSelectedMeditation(null)} 
-              />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {guidedMeditations.map((meditation) => (
-                  <Card key={meditation.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="aspect-video relative overflow-hidden">
-                      <img 
-                        src={meditation.imageUrl} 
-                        alt={meditation.title} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="rounded-full bg-white/80 hover:bg-white"
-                          onClick={() => setSelectedMeditation(meditation)}
-                        >
-                          <Play className="h-6 w-6" />
-                        </Button>
-                      </div>
+        <div className="space-y-6">
+          {selectedExercise ? (
+            <MindfulnessTimer 
+              exercise={selectedExercise} 
+              onBack={() => setSelectedExercise(null)} 
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mindfulnessExercises.map((exercise) => (
+                <Card key={exercise.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold mb-1">{exercise.title}</h3>
+                      <p className="text-muted-foreground text-sm">{exercise.description}</p>
                     </div>
-                    <CardContent className="p-6">
-                      <div className="mb-2">
-                        <h3 className="text-xl font-semibold">{meditation.title}</h3>
-                        <p className="text-muted-foreground text-sm">{meditation.description}</p>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">{meditation.duration} minutes</span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setSelectedMeditation(meditation)}
-                        >
-                          Start Meditation
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">{exercise.duration} minutes</span>
+                      <Button onClick={() => setSelectedExercise(exercise)}>
+                        <Play className="mr-2 h-4 w-4" />
+                        Start
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
         
         <div className="mt-12 border-t pt-8">
           <h2 className="text-2xl font-semibold mb-4">Benefits of Mindfulness</h2>

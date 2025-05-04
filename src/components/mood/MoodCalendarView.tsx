@@ -17,19 +17,25 @@ const moodColors: Record<string, string> = {
 
 type MoodEntry = {
   date: string;
-  mood: string;
-  notes?: string;
+  mood: number;
+  note: string;
 };
 
 interface MoodCalendarViewProps {
-  moodData: MoodEntry[];
+  moodEntries: MoodEntry[];
 }
 
-const MoodCalendarView = ({ moodData }: MoodCalendarViewProps) => {
+const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
   // Format mood data for calendar display
-  const formattedMoodData = moodData.reduce((acc: Record<string, string>, curr) => {
+  const formattedMoodData = moodEntries.reduce((acc: Record<string, string>, curr) => {
     // Store the mood for each date
-    acc[curr.date] = curr.mood;
+    const moodText = 
+      curr.mood === 1 ? 'terrible' :
+      curr.mood === 2 ? 'bad' :
+      curr.mood === 3 ? 'okay' :
+      curr.mood === 4 ? 'good' : 'great';
+    
+    acc[curr.date] = moodText;
     return acc;
   }, {});
   
@@ -47,7 +53,7 @@ const MoodCalendarView = ({ moodData }: MoodCalendarViewProps) => {
         className={cn(
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
           moodClass ? `${moodClass} hover:bg-opacity-80 text-gray-900` : '',
-          dayProps.className // Use the className from dayProps
+          dayProps.selected ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground' : undefined
         )}
       >
         <div className="flex h-full w-full items-center justify-center">
