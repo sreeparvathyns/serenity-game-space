@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { type DayProps } from 'react-day-picker';
+import { type DayPickerDayProps as DayProps } from 'react-day-picker';
 
 // Map mood values to colors
 const moodColors: Record<string, string> = {
@@ -53,7 +53,7 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
         className={cn(
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
           moodClass ? `${moodClass} hover:bg-opacity-80 text-gray-900` : '',
-          dayProps.selected ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground' : undefined
+          dayProps.selected && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground'
         )}
       >
         <div className="flex h-full w-full items-center justify-center">
