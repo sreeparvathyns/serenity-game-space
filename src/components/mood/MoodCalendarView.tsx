@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { type DayPickerDayProps as DayProps } from 'react-day-picker';
+import { type DayPicker } from 'react-day-picker';
 
 // Map mood values to colors
 const moodColors: Record<string, string> = {
@@ -40,7 +40,7 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
   }, {});
   
   // Custom day renderer for the calendar
-  const renderDay = (day: Date, dayProps: DayProps) => {
+  const renderDay = (day: Date, dayProps: any) => {
     // Format the day to match our data format (YYYY-MM-DD)
     const dateKey = format(day, 'yyyy-MM-dd');
     
@@ -74,7 +74,7 @@ const MoodCalendarView = ({ moodEntries }: MoodCalendarViewProps) => {
           showOutsideDays={true}
           fixedWeeks
           components={{
-            Day: ({ date, ...dayProps }) => renderDay(date, dayProps as DayProps)
+            Day: ({ date, ...dayProps }) => renderDay(date, dayProps)
           }}
         />
       </CardContent>

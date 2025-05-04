@@ -93,8 +93,12 @@ const Games = () => {
                 <div className="aspect-[4/3] relative overflow-hidden">
                   <img 
                     src={game.image} 
-                    alt={game.title} 
-                    className="w-full h-full object-cover"
+                    alt={game.title}
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      console.log(`Error loading image for ${game.title}`);
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=60";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
                     <div className="p-4 text-white">
