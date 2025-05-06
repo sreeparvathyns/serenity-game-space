@@ -2,16 +2,27 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase credentials are missing. Please make sure to set the environment variables.');
+}
+
+const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 interface User {
   email: string;
-  password: string; // We'll store this for demo purposes, in real app would be hashed
+  id?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -25,51 +36,82 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Check if user is logged in via Supabase
+    const fetchUser = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Check active session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
+        
+        if (session?.user) {
+          setUser({ 
+            email: session.user.email || '', 
+            id: session.user.id 
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user session:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          setUser({
+            email: session.user.email || '',
+            id: session.user.id
+          });
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Get the list of registered users from localStorage
-      const registeredUsersJSON = localStorage.getItem('registeredUsers');
-      const registeredUsers: User[] = registeredUsersJSON ? JSON.parse(registeredUsersJSON) : [];
-      
-      // Find the user with the provided email
-      const foundUser = registeredUsers.find(u => u.email === email);
-      
-      if (!foundUser) {
-        throw new Error('User not found. Please register first.');
-      }
-      
-      if (foundUser.password !== password) {
-        throw new Error('Invalid password.');
-      }
-      
-      // If we get here, login is successful
-      localStorage.setItem('user', JSON.stringify({ email }));
-      setUser({ email, password });
-      
-      toast({
-        title: "Login successful",
-        description: "Welcome back to Serenity!",
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
-      
-      navigate('/');
-    } catch (error) {
-      let errorMessage = "Please check your credentials and try again.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
+
+      if (error) {
+        throw error;
       }
-      
+
+      if (data.user) {
+        setUser({
+          email: data.user.email || '',
+          id: data.user.id
+        });
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome back to Serenity!",
+        });
+        
+        navigate('/');
+      }
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: errorMessage,
+        description: error.message || "Please check your credentials and try again.",
         variant: "destructive",
       });
       throw error;
@@ -78,21 +120,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, name?: string) => {
     setIsLoading(true);
     try {
-      // Get current registered users from localStorage
-      const registeredUsersJSON = localStorage.getItem('registeredUsers');
-      const registeredUsers: User[] = registeredUsersJSON ? JSON.parse(registeredUsersJSON) : [];
-      
-      // Check if email already exists
-      if (registeredUsers.some(user => user.email === email)) {
-        throw new Error('Email already registered. Please login instead.');
+      // Create the user in Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name || '',
+          },
+        }
+      });
+
+      if (error) {
+        throw error;
       }
-      
-      // Add the new user to the list
-      const updatedUsers = [...registeredUsers, { email, password }];
-      localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+
+      if (data.user) {
+        // Store additional user data in profiles table if needed
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            { 
+              id: data.user.id, 
+              email: email,
+              full_name: name || '',
+              created_at: new Date().toISOString()
+            }
+          ]);
+
+        if (profileError) {
+          console.error("Error creating user profile:", profileError);
+        }
+      }
       
       toast({
         title: "Registration successful",
@@ -100,15 +162,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       navigate('/login');
-    } catch (error) {
-      let errorMessage = "There was an error creating your account. Please try again.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
+    } catch (error: any) {
       toast({
         title: "Registration failed",
-        description: errorMessage,
+        description: error.message || "There was an error creating your account. Please try again.",
         variant: "destructive",
       });
       throw error;
@@ -117,14 +174,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    navigate('/login');
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setUser(null);
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+      navigate('/login');
+    } catch (error: any) {
+      toast({
+        title: "Logout failed",
+        description: error.message || "An error occurred during logout.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
