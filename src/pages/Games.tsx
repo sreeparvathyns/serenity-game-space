@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -50,13 +49,6 @@ const Games = () => {
         </button>
         {activeGame === "breathing" && (
           <div className="mb-6">
-            <AspectRatio ratio={16/9} className="overflow-hidden rounded-lg mb-4">
-              <img 
-                src="https://images.unsplash.com/photo-1551376347-075b0121a292?w=1200&auto=format&fit=crop&q=80&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJ1YmJsZXN8ZW58MHx8MHx8fDA%3D"
-                alt="Breathing Bubbles Visualization"
-                className="w-full h-full object-cover"
-              />
-            </AspectRatio>
             <p className="text-center text-muted-foreground italic mb-4">
               "Breathe in slowly as bubbles rise, breathe out as they float away. Find your rhythm and calm your mind."
             </p>
@@ -97,7 +89,7 @@ const Games = () => {
                     className="w-full h-full object-cover" 
                     onError={(e) => {
                       console.log(`Error loading image for ${game.title}`);
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=60";
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80";
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
