@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,7 @@ const Register = () => {
     setIsSubmitting(true);
     
     try {
-      await register(email, password, name);
+      await register(email, password);
     } catch (error) {
       console.error('Registration failed:', error);
       // Toast is already handled in the register function
